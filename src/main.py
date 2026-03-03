@@ -8,8 +8,15 @@ import sys
 import os
 import time
 
-# 添加项目根目录到 Python 路径
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# 处理 PyInstaller 打包后的路径
+if getattr(sys, 'frozen', False):
+    # 打包后的路径
+    BASE_DIR = os.path.dirname(sys.executable)
+    sys.path.insert(0, os.path.join(sys._MEIPASS, 'src'))
+else:
+    # 开发环境路径
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0, os.path.join(BASE_DIR, 'src'))
 
 import cv2
 
