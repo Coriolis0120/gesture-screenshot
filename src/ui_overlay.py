@@ -85,14 +85,16 @@ class StatusOverlay:
             state: "idle" / "ready" / "captured"
         """
         if state == "idle":
-            self.icon_label.config(text="\U0001F590", fg="#888888")  # 张开的手
-            self.text_label.config(text="Show palm", fg="#888888")
+            # idle 状态隐藏窗口
+            self.hide()
         elif state == "ready":
             self.icon_label.config(text="\u270B", fg="#4CAF50")  # 举起的手
             self.text_label.config(text="READY", fg="#4CAF50")
+            self.show()
         elif state == "captured":
             self.icon_label.config(text="\U0001F4F7", fg="#2196F3")  # 相机
             self.text_label.config(text="Captured!", fg="#2196F3")
+            self.show()
 
         self.root.update()
         logger.debug(f"UI 状态更新: {state}")

@@ -30,9 +30,8 @@ def main():
     """主程序入口"""
     logger.info("程序启动")
 
-    # 初始化 UI 覆盖层
+    # 初始化 UI 覆盖层（初始隐藏）
     overlay = StatusOverlay()
-    overlay.show()
 
     # 初始化摄像头
     cap = cv2.VideoCapture(CAMERA_ID)
