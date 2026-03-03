@@ -25,6 +25,7 @@ pyinstaller --onefile --windowed ^
     --distpath dist ^
     --workpath build ^
     --specpath . ^
+    --add-data "src;src" ^
     --hidden-import gesture_detector ^
     --hidden-import logger ^
     --hidden-import screenshot ^
@@ -38,7 +39,7 @@ pyinstaller --onefile --windowed ^
     --hidden-import pyautogui ^
     --collect-all mediapipe ^
     --collect-all cv2 ^
-    src\main.py
+    main.py
 echo.
 
 if exist dist\GestureScreenshot.exe (
