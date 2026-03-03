@@ -9,7 +9,7 @@ from typing import Optional
 
 import pyautogui
 
-from src.logger import setup_logger
+from logger import setup_logger
 
 logger = setup_logger("screenshot")
 

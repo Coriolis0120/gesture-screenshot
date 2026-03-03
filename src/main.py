@@ -4,13 +4,18 @@
 通过摄像头检测手势变化（张开 -> 握拳），触发桌面截图
 """
 
+import sys
+import os
 import time
+
+# 添加项目根目录到 Python 路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import cv2
 
-from src.gesture_detector import GestureDetector
-from src.logger import setup_logger
-from src.screenshot import take_screenshot
+from gesture_detector import GestureDetector
+from logger import setup_logger
+from screenshot import take_screenshot
 
 # 配置
 CAMERA_ID = 0  # 摄像头ID，默认为0
