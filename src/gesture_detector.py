@@ -98,7 +98,9 @@ class GestureDetector:
         """
         判断单个手指是否弯曲
 
-        使用更严格的方法：比较指尖、近端指间关节(PIP)、掌指关节(MCP)的位置
+        手掌朝向摄像头时：
+        - 手指伸直：指尖在画面上方（y 值小）
+        - 手指弯曲：指尖在画面下方（y 值大）
 
         Args:
             landmarks: MediaPipe 手部关键点
@@ -113,12 +115,10 @@ class GestureDetector:
         pip = landmarks.landmark[finger_pip_idx]
         mcp = landmarks.landmark[finger_mcp_idx]
 
-        # 手指弯曲时，指尖的 y 坐标会小于（高于）PIP 关节
-        # 手指伸直时，指尖的 y 坐标会大于（低于）PIP 关节
-        # 注意：y 坐标向下为正
-
-        # 判断方法：指尖是否比 PIP 关节更靠近手掌
-        is_closed = tip.y < pip.y
+        # 手掌朝向摄像头时：
+        # - 伸直：tip.y < pip.y（指尖在上）
+        # - 弯曲：tip.y > pip.y（指尖在下）
+        is_closed = tip.y > pip.y
 
         return is_closed
 
