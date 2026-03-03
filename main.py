@@ -8,12 +8,8 @@ import sys
 import os
 import time
 
-# 处理 PyInstaller 打包后的路径
-if getattr(sys, 'frozen', False):
-    # 打包后，模块在 _MEIPASS 根目录
-    sys.path.insert(0, sys._MEIPASS)
-else:
-    # 开发环境，模块在 src 目录
+# 添加 src 目录到 Python 路径（开发环境）
+if not getattr(sys, 'frozen', False):
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 import cv2

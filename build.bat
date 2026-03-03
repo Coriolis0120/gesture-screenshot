@@ -18,14 +18,14 @@ echo [1/3] Installing dependencies...
 pip install -r requirements.txt
 echo.
 
-REM 打包（包含所有依赖）
+REM 打包（使用 --paths 指定模块路径）
 echo [2/3] Building executable...
 pyinstaller --onefile --windowed ^
     --name "GestureScreenshot" ^
     --distpath dist ^
     --workpath build ^
     --specpath . ^
-    --add-data "src;src" ^
+    --paths src ^
     --hidden-import gesture_detector ^
     --hidden-import logger ^
     --hidden-import screenshot ^
