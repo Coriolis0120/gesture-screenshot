@@ -7,7 +7,6 @@
 import sys
 import os
 import time
-import threading
 
 # 添加项目根目录到 Python 路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -39,7 +38,6 @@ def main():
     cap = cv2.VideoCapture(CAMERA_ID)
     if not cap.isOpened():
         logger.error("无法打开摄像头")
-        overlay.set_state("idle")
         overlay.destroy()
         print("错误：无法打开摄像头，请检查摄像头是否连接")
         return
@@ -63,20 +61,11 @@ def main():
     print("  - 按 Ctrl+C 退出程序")
     print("=" * 50)
 
-    running = True
-
-    def update_ui():
-        """持续更新 UI"""
-        while running:
-            overlay.update()
-            time.sleep(0.03)  # ~30 FPS
-
-    # 启动 UI 更新线程
-    ui_thread = threading.Thread(target=update_ui, daemon=True)
-    ui_thread.start()
-
     try:
         while True:
+            # 更新 UI（处理 tkinter 事件）
+            overlay.update()
+
             # 读取帧
             ret, frame = cap.read()
             if not ret:
@@ -118,7 +107,6 @@ def main():
         logger.info("用户中断程序")
 
     finally:
-        running = False
         # 释放资源
         cap.release()
         detector.release()
