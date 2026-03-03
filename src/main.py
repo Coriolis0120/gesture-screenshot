@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 """
 手势截图主程序
-通过摄像头检测手势变化（张开 → 握拳），触发桌面截图
+通过摄像头检测手势变化（张开 -> 握拳），触发桌面截图
 """
 
 import time
@@ -40,8 +41,8 @@ def main():
     print("=" * 50)
     print("手势截图程序已启动")
     print("操作说明：")
-    print("  - 张开手掌，然后握拳 → 触发截图")
-    print("  - 按 'q' 键退出程序")
+    print("  - 张开手掌，然后握拳 -> 触发截图")
+    print("  - 按 q 键退出程序")
     print("=" * 50)
 
     try:
@@ -89,9 +90,9 @@ def main():
             # 显示画面
             cv2.imshow("Gesture Screenshot", frame)
 
-            # 按 'q' 退出
-            if cv2.waitKey(1) & 0xFF == ord('q"):
-                logger.info("用户按下 'q' 键，准备退出")
+            # 按 q 退出
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                logger.info("用户按下 q 键，准备退出")
                 break
 
     except KeyboardInterrupt:
