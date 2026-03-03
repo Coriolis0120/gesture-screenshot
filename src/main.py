@@ -7,6 +7,7 @@
 import sys
 import os
 import time
+import threading
 
 # 添加项目根目录到 Python 路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -16,10 +17,12 @@ import cv2
 from gesture_detector import GestureDetector
 from logger import setup_logger
 from screenshot import take_screenshot
+from ui_overlay import StatusOverlay
 
 # 配置
 CAMERA_ID = 0  # 摄像头ID，默认为0
 SCREENSHOT_COOLDOWN = 1.0  # 截图冷却时间（秒），防止连续触发
+CAPTURED_DISPLAY_TIME = 1.5  # 截图成功显示时间（秒）
 
 logger = setup_logger("main")
 
@@ -28,10 +31,16 @@ def main():
     """主程序入口"""
     logger.info("程序启动")
 
+    # 初始化 UI 覆盖层
+    overlay = StatusOverlay()
+    overlay.show()
+
     # 初始化摄像头
     cap = cv2.VideoCapture(CAMERA_ID)
     if not cap.isOpened():
         logger.error("无法打开摄像头")
+        overlay.set_state("idle")
+        overlay.destroy()
         print("错误：无法打开摄像头，请检查摄像头是否连接")
         return
 
@@ -43,13 +52,28 @@ def main():
     # 上次截图时间
     last_screenshot_time = 0
 
+    # 截图成功回调时间
+    captured_until = 0
+
     print("=" * 50)
     print("手势截图程序已启动")
     print("操作说明：")
     print("  1. 对着摄像头张开手掌（激活）")
     print("  2. 握拳（触发截图）")
-    print("  - 按 q 键退出程序")
+    print("  - 按 Ctrl+C 退出程序")
     print("=" * 50)
+
+    running = True
+
+    def update_ui():
+        """持续更新 UI"""
+        while running:
+            overlay.update()
+            time.sleep(0.03)  # ~30 FPS
+
+    # 启动 UI 更新线程
+    ui_thread = threading.Thread(target=update_ui, daemon=True)
+    ui_thread.start()
 
     try:
         while True:
@@ -65,23 +89,6 @@ def main():
             # 检测手势
             gesture, results, closed_count = detector.detect(frame)
 
-            # 绘制手部关键点
-            frame = detector.draw_landmarks(frame, results)
-
-            # 显示当前状态
-            state_text = detector.get_state_text()
-            cv2.putText(
-                frame, state_text, (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2
-            )
-
-            # 显示手势信息
-            info_text = f"Fingers closed: {closed_count}"
-            cv2.putText(
-                frame, info_text, (10, 60),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2
-            )
-
             # 检查手势变化
             if detector.check_gesture_change(gesture, closed_count):
                 current_time = time.time()
@@ -91,31 +98,31 @@ def main():
                     filepath = take_screenshot()
                     if filepath:
                         print(f"截图已保存: {filepath}")
-                        # 在画面上显示提示
-                        cv2.putText(
-                            frame, "Screenshot Saved!", (10, 100),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3
-                        )
+                        overlay.set_state("captured")
+                        captured_until = current_time + CAPTURED_DISPLAY_TIME
                     last_screenshot_time = current_time
                 else:
                     logger.debug("截图冷却中，跳过")
 
-            # 显示画面
-            cv2.imshow("Gesture Screenshot", frame)
-
-            # 按 q 退出
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                logger.info("用户按下 q 键，准备退出")
-                break
+            # 更新 UI 状态
+            current_time = time.time()
+            if captured_until > 0 and current_time < captured_until:
+                # 仍在显示截图成功状态
+                pass
+            elif detector.state == "ready":
+                overlay.set_state("ready")
+            else:
+                overlay.set_state("idle")
 
     except KeyboardInterrupt:
         logger.info("用户中断程序")
 
     finally:
+        running = False
         # 释放资源
         cap.release()
-        cv2.destroyAllWindows()
         detector.release()
+        overlay.destroy()
         logger.info("程序正常退出")
         print("程序已退出")
 
