@@ -10,18 +10,26 @@ echo [1/2] Installing dependencies...
 pip install -r requirements.txt
 echo.
 
-REM 打包（包含所有 src 模块）
+REM 打包（包含所有依赖）
 echo [2/2] Building executable...
 pyinstaller --onefile --windowed ^
     --name "GestureScreenshot" ^
     --distpath dist ^
     --workpath build ^
     --specpath . ^
-    --add-data "src;src" ^
     --hidden-import gesture_detector ^
     --hidden-import logger ^
     --hidden-import screenshot ^
     --hidden-import ui_overlay ^
+    --hidden-import mediapipe ^
+    --hidden-import cv2 ^
+    --hidden-import numpy ^
+    --hidden-import google.protobuf ^
+    --hidden-import google.protobuf.descriptor ^
+    --hidden-import PIL ^
+    --hidden-import pyautogui ^
+    --collect-all mediapipe ^
+    --collect-all cv2 ^
     src\main.py
 echo.
 

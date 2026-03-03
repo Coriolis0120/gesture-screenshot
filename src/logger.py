@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 日志配置模块
 提供统一的日志记录功能，同时输出到控制台和文件
@@ -7,21 +8,24 @@ import logging
 import os
 from datetime import datetime
 
+# 日志保存目录：与截图相同的用户目录
+PICTURES_DIR = os.path.join(os.path.expanduser("~"), "Pictures")
+LOG_DIR = os.path.join(PICTURES_DIR, "GestureScreenshots", "logs")
 
-def setup_logger(name: str = "gesture_screenshot", log_dir: str = "logs") -> logging.Logger:
+
+def setup_logger(name: str = "gesture_screenshot") -> logging.Logger:
     """
     配置并返回日志记录器
 
     Args:
         name: 日志记录器名称
-        log_dir: 日志文件目录
 
     Returns:
         配置好的 Logger 对象
     """
     # 创建日志目录
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
+    if not os.path.exists(LOG_DIR):
+        os.makedirs(LOG_DIR)
 
     # 创建 logger
     logger = logging.getLogger(name)
@@ -45,7 +49,7 @@ def setup_logger(name: str = "gesture_screenshot", log_dir: str = "logs") -> log
 
     # 文件输出
     log_filename = datetime.now().strftime("%Y%m%d") + ".log"
-    log_filepath = os.path.join(log_dir, log_filename)
+    log_filepath = os.path.join(LOG_DIR, log_filename)
     file_handler = logging.FileHandler(log_filepath, encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
