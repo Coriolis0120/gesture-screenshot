@@ -1,5 +1,5 @@
 # 手势截图项目依赖
 opencv-python>=4.8.0
-mediapipe>=0.10.0
+mediapipe>=0.10.9
 pyautogui>=0.9.54
 Pillow>=10.0.0
