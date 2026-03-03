@@ -46,7 +46,8 @@ def main():
     print("=" * 50)
     print("手势截图程序已启动")
     print("操作说明：")
-    print("  - 张开手掌，然后握拳 -> 触发截图")
+    print("  1. 对着摄像头张开手掌（激活）")
+    print("  2. 握拳（触发截图）")
     print("  - 按 q 键退出程序")
     print("=" * 50)
 
@@ -62,20 +63,27 @@ def main():
             frame = cv2.flip(frame, 1)
 
             # 检测手势
-            gesture, results = detector.detect(frame)
+            gesture, results, closed_count = detector.detect(frame)
 
             # 绘制手部关键点
             frame = detector.draw_landmarks(frame, results)
 
-            # 显示当前手势状态
-            status_text = f"Gesture: {gesture if gesture else 'None'}"
+            # 显示当前状态
+            state_text = detector.get_state_text()
             cv2.putText(
-                frame, status_text, (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2
+                frame, state_text, (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2
+            )
+
+            # 显示手势信息
+            info_text = f"Fingers closed: {closed_count}"
+            cv2.putText(
+                frame, info_text, (10, 60),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2
             )
 
             # 检查手势变化
-            if detector.check_gesture_change(gesture):
+            if detector.check_gesture_change(gesture, closed_count):
                 current_time = time.time()
                 # 检查冷却时间
                 if current_time - last_screenshot_time >= SCREENSHOT_COOLDOWN:
@@ -85,8 +93,8 @@ def main():
                         print(f"截图已保存: {filepath}")
                         # 在画面上显示提示
                         cv2.putText(
-                            frame, "Screenshot Saved!", (10, 70),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2
+                            frame, "Screenshot Saved!", (10, 100),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3
                         )
                     last_screenshot_time = current_time
                 else:
