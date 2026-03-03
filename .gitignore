@@ -37,6 +37,9 @@ env/
 # screenshots/*.png
 # screenshots/*.jpg
 
+# Logs
+logs/*.log
+
 # OS
 .DS_Store
 Thumbs.db
